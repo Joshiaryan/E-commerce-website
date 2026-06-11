@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AETHERIO // Admin Dashboard</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- CSS Style -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+    <div class="admin-layout">
+        <!-- Sidebar Navigation -->
+        <aside class="admin-sidebar">
+            <div class="sidebar-brand">
+                <a href="/" class="logo">
+                    <span class="logo-dot"></span>
+                    AETHERIO
+                </a>
+                <span class="badge badge-accent">Admin</span>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <button class="nav-item active" data-tab="dashboard">
+                    <i data-lucide="layout-dashboard"></i> Dashboard
+                </button>
+                <button class="nav-item" data-tab="products">
+                    <i data-lucide="shopping-bag"></i> Products
+                </button>
+                <button class="nav-item" data-tab="orders">
+                    <i data-lucide="package"></i> Orders
+                </button>
+                <button class="nav-item" data-tab="users">
+                    <i data-lucide="users"></i> Users
+                </button>
+            </nav>
+            
+            <div class="sidebar-footer">
+                <a href="/" class="nav-item back-btn">
+                    <i data-lucide="arrow-left"></i> Back to Store
+                </a>
+            </div>
+        </aside>
+
+        <!-- Main Workspace -->
+        <main class="admin-main">
+            <!-- Header bar -->
+            <header class="admin-header">
+                <h1 id="page-title">Dashboard</h1>
+                
+                <div class="admin-user-profile">
+                    <div class="user-info">
+                        <span class="user-name">{{ current_user.full_name }}</span>
+                        <span class="user-role">Administrator</span>
+                    </div>
+                    <div class="avatar">
+                        <i data-lucide="shield"></i>
+                    </div>
+                </div>
+            </header>
+
+            <div class="admin-content-container">
+                <!-- ==================== DASHBOARD PANEL ==================== -->
+                <div class="admin-panel active" id="panel-dashboard">
+                    <!-- Metrics Row -->
+                    <div class="metrics-grid">
+                        <div class="metric-card">
+                            <div class="metric-icon val-revenue">
+                                <i data-lucide="dollar-sign"></i>
+                            </div>
+                            <div class="metric-data">
+                                <span class="metric-label">Total Revenue</span>
+                                <h3 class="metric-value" id="stat-revenue">$0.00</h3>
+                            </div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-icon val-orders">
+                                <i data-lucide="shopping-cart"></i>
+                            </div>
+                            <div class="metric-data">
+                                <span class="metric-label">Orders Placed</span>
+                                <h3 class="metric-value" id="stat-orders">0</h3>
+                            </div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-icon val-users">
+                                <i data-lucide="users-2"></i>
+                            </div>
+                            <div class="metric-data">
+                                <span class="metric-label">Total Users</span>
+                                <h3 class="metric-value" id="stat-users">0</h3>
+                            </div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-icon val-products">
+                                <i data-lucide="box"></i>
+                            </div>
+                            <div class="metric-data">
+                                <span class="metric-label">Products Active</span>
+                                <h3 class="metric-value" id="stat-products">0</h3>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Recent Orders Section -->
+                    <div class="admin-section-card">
+                        <div class="section-card-header">
+                            <h2>Recent Activity</h2>
+                            <button class="btn btn-secondary btn-sm" id="view-all-orders-btn">View All Orders</button>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="admin-table">
+                                <thead>
+                                    <tr>
+                                        <th>Order ID</th>
+                                        <th>Customer</th>
+                                        <th>Date</th>
+                                        <th>Total</th>
+                                        <th>Items Count</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="recent-orders-list">
+                                    <!-- Dynamic rows -->
+                                    <tr>
+                                        <td colspan="6" class="text-center">Loading dashboard activity...</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ==================== PRODUCTS PANEL ==================== -->
+                <div class="admin-panel" id="panel-products">
+                    <div class="panel-actions-header">
+                        <div class="search-wrapper">
+                            <i data-lucide="search" class="search-icon"></i>
+                            <input type="text" id="product-search" placeholder="Search products...">
+                        </div>
+                        <button class="btn btn-primary" id="add-product-btn">
+                            <i data-lucide="plus"></i> Add Product
+                        </button>
+                    </div>
+
+                    <div class="admin-section-card">
+                        <div class="table-responsive">
+                            <table class="admin-table">
+                                <thead>
+                                    <tr>
+                                        <th>Image</th>
+                                        <th>Name</th>
+                                        <th>Category</th>
+                                        <th>Price</th>
+                                        <th>Rating</th>
+                                        <th>Specifications</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="admin-products-list">
+                                    <!-- Dynamic rows -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ==================== ORDERS PANEL ==================== -->
+                <div class="admin-panel" id="panel-orders">
+                    <div class="panel-actions-header">
+                        <div class="search-wrapper">
+                            <i data-lucide="search" class="search-icon"></i>
+                            <input type="text" id="order-search" placeholder="Search orders by customer or ID...">
+                        </div>
+                    </div>
+
+                    <div class="admin-section-card">
+                        <div class="table-responsive">
+                            <table class="admin-table">
+                                <thead>
+                                    <tr>
+                                        <th>Order ID</th>
+                                        <th>Customer Name</th>
+                                        <th>Customer Email</th>
+                                        <th>Date</th>
+                                        <th>Subtotal</th>
+                                        <th>Total</th>
+                                        <th>Items</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="admin-orders-list">
+                                    <!-- Dynamic rows -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ==================== USERS PANEL ==================== -->
+                <div class="admin-panel" id="panel-users">
+                    <div class="panel-actions-header">
+                        <div class="search-wrapper">
+                            <i data-lucide="search" class="search-icon"></i>
+                            <input type="text" id="user-search" placeholder="Search users by name or email...">
+                        </div>
+                    </div>
+
+                    <div class="admin-section-card">
+                        <div class="table-responsive">
+                            <table class="admin-table">
+                                <thead>
+                                    <tr>
+                                        <th>User ID</th>
+                                        <th>Full Name</th>
+                                        <th>Email</th>
+                                        <th>Registration Date</th>
+                                        <th>Orders Count</th>
+                                        <th>Role</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="admin-users-list">
+                                    <!-- Dynamic rows -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Product Form Modal (Add / Edit) -->
+    <div class="modal-overlay" id="product-form-modal">
+        <div class="modal-container admin-modal-container">
+            <button class="modal-close" id="close-product-form-modal" aria-label="Close modal">
+                <i data-lucide="x"></i>
+            </button>
+            <h2 id="product-modal-title">Add New Product</h2>
+            <form id="product-form" class="admin-modal-form">
+                <input type="hidden" id="form-product-id">
+                
+                <div class="form-group">
+                    <label for="form-name">Product Name</label>
+                    <input type="text" id="form-name" required placeholder="e.g. Nebula Pro Mechanical Keyboard">
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="form-category">Category</label>
+                        <select id="form-category" required>
+                            <option value="audio">Audio</option>
+                            <option value="peripherals">Peripherals</option>
+                            <option value="wearables">Wearables</option>
+                            <option value="lifestyle">Lifestyle</option>
+                            <option value="power">Power</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="form-price">Price ($)</label>
+                        <input type="number" id="form-price" required step="0.01" min="0" placeholder="e.g. 129.99">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="form-rating">Rating (1.0 - 5.0)</label>
+                        <input type="number" id="form-rating" required step="0.1" min="1" max="5" value="4.5">
+                    </div>
+                    <div class="form-group">
+                        <label for="form-image">Image URI Path</label>
+                        <input type="text" id="form-image" required placeholder="e.g. /static/images/product_keyboard.webp">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="form-description">Description</label>
+                    <textarea id="form-description" required rows="3" placeholder="Describe the device's aesthetics, performance and value..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="form-specs">Specifications <small>(comma-separated values)</small></label>
+                    <input type="text" id="form-specs" placeholder="e.g. Bluetooth 5.3, 60h Battery, Dynamic RGB, Tactile Switch">
+                </div>
+
+                <div class="admin-form-actions">
+                    <button type="button" class="btn btn-secondary" id="cancel-product-form-btn">Cancel</button>
+                    <button type="submit" class="btn btn-primary" id="save-product-form-btn">Save Product</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Order Detail View Modal -->
+    <div class="modal-overlay" id="order-detail-modal">
+        <div class="modal-container admin-modal-container order-detail-modal-container">
+            <button class="modal-close" id="close-order-detail-modal" aria-label="Close modal">
+                <i data-lucide="x"></i>
+            </button>
+            <h2>Order Details</h2>
+            <div id="order-detail-content">
+                <!-- Dynamic order invoice content -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin JS Script -->
+    <script src="{{ url_for('static', filename='js/admin.js') }}"></script>
+</body>
+</html>

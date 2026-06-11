@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AETHERIO // Premium Tech Ecosystem</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- CSS Style -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <header class="main-header">
+        <div class="container nav-container">
+            <a href="/" class="logo">
+                <span class="logo-dot"></span>
+                AETHERIO
+            </a>
+            
+            <nav class="desktop-nav">
+                <a href="#" class="nav-link active" data-category="all">All Products</a>
+                <a href="#" class="nav-link" data-category="audio">Audio</a>
+                <a href="#" class="nav-link" data-category="peripherals">Peripherals</a>
+                <a href="#" class="nav-link" data-category="wearables">Wearables</a>
+            </nav>
+
+            <div class="nav-actions">
+                <button class="icon-btn" id="theme-toggle" aria-label="Toggle theme">
+                    <i data-lucide="sun" class="sun-icon"></i>
+                    <i data-lucide="moon" class="moon-icon"></i>
+                </button>
+
+                <!-- Account Button -->
+                <div class="account-menu-wrapper">
+                    <button class="icon-btn" id="account-btn" aria-label="Account">
+                        <i data-lucide="user" id="account-icon"></i>
+                    </button>
+                    <!-- Dropdown: shown when logged in -->
+                    <div class="account-dropdown" id="account-dropdown">
+                        <div class="account-dropdown-header">
+                            <span id="dropdown-name">My Account</span>
+                            <span id="dropdown-email" class="dropdown-email"></span>
+                        </div>
+                        <button class="dropdown-item" id="view-orders-btn">
+                            <i data-lucide="package"></i> My Orders
+                        </button>
+                        {% if current_user.is_authenticated and current_user.is_admin %}
+                        <a href="/admin" class="dropdown-item" id="admin-panel-link">
+                            <i data-lucide="shield-alert"></i> Admin Panel
+                        </a>
+                        {% endif %}
+                        <button class="dropdown-item dropdown-item-danger" id="logout-btn">
+                            <i data-lucide="log-out"></i> Sign Out
+                        </button>
+                    </div>
+                </div>
+                
+                <button class="icon-btn cart-trigger" id="cart-btn" aria-label="Open cart">
+                    <i data-lucide="shopping-bag"></i>
+                    <span class="cart-badge" id="cart-badge">0</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main>
+        <!-- Hero Section -->
+        <section class="hero-section">
+            <div class="hero-glow"></div>
+            <div class="container hero-container">
+                <div class="hero-content">
+                    <span class="hero-tagline"><i data-lucide="sparkles"></i> Future Tech Gear</span>
+                    <h1 class="hero-title">Elevate Your Digital Space</h1>
+                    <p class="hero-description">Experience clean minimalism combined with premium tactile performance. Crafted for creators, developers, and audiophiles who appreciate precision.</p>
+                    <div class="hero-actions">
+                        <a href="#catalog" class="btn btn-primary">Explore Catalog</a>
+                        <button class="btn btn-secondary" id="hero-quick-view" data-product-id="1">Quick View Nebula X1</button>
+                    </div>
+                </div>
+                <div class="hero-visual">
+                    <div class="hero-card-glass">
+                        <img src="{{ url_for('static', filename='images/hero_product.webp') }}" alt="Nebula X1 Headset Banner" class="hero-image">
+                        <div class="hero-spec-tag">
+                            <span class="pulse-dot"></span>
+                            Featured: Nebula X1 Hybrid ANC
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Catalog Section -->
+        <section id="catalog" class="catalog-section">
+            <div class="container">
+                <div class="section-header">
+                    <div>
+                        <h2 class="section-title">The Ecosystem</h2>
+                        <p class="section-subtitle">Refined gear designed to work in perfect harmony.</p>
+                    </div>
+                    <div class="catalog-controls">
+                        <!-- Search -->
+                        <div class="search-wrapper">
+                            <i data-lucide="search" class="search-icon"></i>
+                            <input type="text" id="search-input" placeholder="Search gear...">
+                        </div>
+                        <!-- Sort -->
+                        <div class="sort-wrapper">
+                            <i data-lucide="sliders-horizontal" class="sort-icon"></i>
+                            <select id="sort-select" aria-label="Sort products">
+                                <option value="featured">Featured</option>
+                                <option value="price-low">Price: Low to High</option>
+                                <option value="price-high">Price: High to Low</option>
+                                <option value="rating">Top Rated</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Products Grid -->
+                <div class="products-grid" id="products-grid">
+                    <!-- Dynamic product cards render here via JS -->
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Shopping Cart Drawer -->
+    <div class="cart-drawer-overlay" id="cart-drawer-overlay"></div>
+    <div class="cart-drawer" id="cart-drawer">
+        <div class="cart-header">
+            <h3>Shopping Bag (<span id="cart-count">0</span>)</h3>
+            <button class="close-btn" id="close-cart" aria-label="Close cart">
+                <i data-lucide="x"></i>
+            </button>
+        </div>
+        
+        <div class="cart-items" id="cart-items-container">
+            <!-- Dynamic cart items here -->
+            <div class="empty-cart-message">
+                <i data-lucide="shopping-bag" size="40"></i>
+                <p>Your bag is empty.</p>
+                <a href="#catalog" class="btn btn-secondary close-cart-link">Browse Products</a>
+            </div>
+        </div>
+
+        <div class="cart-footer" id="cart-footer">
+            <div class="cart-summary">
+                <div class="summary-row">
+                    <span>Subtotal</span>
+                    <span id="cart-subtotal">$0.00</span>
+                </div>
+                <div class="summary-row">
+                    <span>Estimated Shipping</span>
+                    <span class="free-shipping">FREE</span>
+                </div>
+                <div class="summary-row total-row">
+                    <span>Total</span>
+                    <span id="cart-total">$0.00</span>
+                </div>
+            </div>
+            <button class="btn btn-primary btn-block" id="checkout-btn">Proceed to Checkout</button>
+        </div>
+    </div>
+
+    <!-- Product Details Quick View Modal -->
+    <div class="modal-overlay" id="product-modal">
+        <div class="modal-container">
+            <button class="modal-close" id="close-modal" aria-label="Close modal">
+                <i data-lucide="x"></i>
+            </button>
+            <div class="modal-content" id="modal-product-detail">
+                <!-- Dynamic product view here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Checkout Modal -->
+    <div class="modal-overlay" id="checkout-modal">
+        <div class="modal-container checkout-container">
+            <button class="modal-close" id="close-checkout" aria-label="Close checkout">
+                <i data-lucide="x"></i>
+            </button>
+            <div class="checkout-content">
+                <div class="checkout-form-side">
+                    <h2>Shipping Details</h2>
+                    <form id="checkout-form">
+                        <div class="form-group">
+                            <label for="checkout-name">Full Name</label>
+                            <input type="text" id="checkout-name" required placeholder="John Doe">
+                        </div>
+                        <div class="form-group">
+                            <label for="checkout-email">Email Address</label>
+                            <input type="email" id="checkout-email" required placeholder="john@example.com">
+                        </div>
+                        <div class="form-group">
+                            <label for="checkout-address">Shipping Address</label>
+                            <input type="text" id="checkout-address" required placeholder="123 Cosmic Lane">
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="checkout-city">City</label>
+                                <input type="text" id="checkout-city" required placeholder="Neo City">
+                            </div>
+                            <div class="form-group">
+                                <label for="checkout-zip">ZIP Code</label>
+                                <input type="text" id="checkout-zip" required placeholder="10101">
+                            </div>
+                        </div>
+                        <h2 class="section-divider">Payment Details</h2>
+                        <div class="form-group">
+                            <label for="checkout-card">Credit Card Number</label>
+                            <div class="input-icon-wrapper">
+                                <i data-lucide="credit-card" class="input-icon"></i>
+                                <input type="text" id="checkout-card" required placeholder="4000 1234 5678 9010" maxlength="19">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="checkout-expiry">Expiry Date</label>
+                                <input type="text" id="checkout-expiry" required placeholder="MM/YY" maxlength="5">
+                            </div>
+                            <div class="form-group">
+                                <label for="checkout-cvv">CVV</label>
+                                <input type="password" id="checkout-cvv" required placeholder="•••" maxlength="3">
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-block" id="place-order-btn">Place Order ($0.00)</button>
+                    </form>
+                </div>
+                <div class="checkout-summary-side">
+                    <h3>Order Summary</h3>
+                    <div class="checkout-items" id="checkout-items-list">
+                        <!-- Dynamic items -->
+                    </div>
+                    <div class="checkout-totals">
+                        <div class="summary-row">
+                            <span>Subtotal</span>
+                            <span id="checkout-subtotal">$0.00</span>
+                        </div>
+                        <div class="summary-row">
+                            <span>Shipping</span>
+                            <span class="free-shipping">FREE</span>
+                        </div>
+                        <div class="summary-row total-row">
+                            <span>Total</span>
+                            <span id="checkout-total">$0.00</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success Screen Modal -->
+    <div class="modal-overlay" id="success-modal">
+        <div class="modal-container success-container">
+            <div class="success-content">
+                <div class="success-icon-wrapper">
+                    <i data-lucide="check-circle" class="success-check-icon"></i>
+                </div>
+                <h2>Order Confirmed!</h2>
+                <p>Thank you for choosing Aetherio. Your order has been registered successfully. A confirmation email with details will be sent shortly.</p>
+                <div class="order-id-tag">Order ID: <span id="confirmed-order-id">AETH-83921</span></div>
+                <button class="btn btn-primary" id="success-done-btn">Continue Shopping</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Auth Modal (Login / Register) -->
+    <div class="modal-overlay" id="auth-modal">
+        <div class="modal-container auth-container">
+            <button class="modal-close" id="close-auth-modal" aria-label="Close">
+                <i data-lucide="x"></i>
+            </button>
+            <!-- Tabs -->
+            <div class="auth-tabs">
+                <button class="auth-tab active" id="tab-login" data-tab="login">Sign In</button>
+                <button class="auth-tab" id="tab-register" data-tab="register">Create Account</button>
+            </div>
+
+            <!-- Login Form -->
+            <div class="auth-form-panel" id="panel-login">
+                <p class="auth-sub">Welcome back. Sign in to access your orders.</p>
+                <form id="login-form">
+                    <div class="form-group">
+                        <label for="login-email">Email Address</label>
+                        <input type="email" id="login-email" required placeholder="you@example.com">
+                    </div>
+                    <div class="form-group">
+                        <label for="login-password">Password</label>
+                        <input type="password" id="login-password" required placeholder="••••••••">
+                    </div>
+                    <p class="auth-error" id="login-error"></p>
+                    <button type="submit" class="btn btn-primary btn-block" id="login-submit-btn">Sign In</button>
+                </form>
+            </div>
+
+            <!-- Register Form -->
+            <div class="auth-form-panel hidden" id="panel-register">
+                <p class="auth-sub">Create your account to track orders and get early access.</p>
+                <form id="register-form">
+                    <div class="form-group">
+                        <label for="reg-name">Full Name</label>
+                        <input type="text" id="reg-name" required placeholder="John Doe">
+                    </div>
+                    <div class="form-group">
+                        <label for="reg-email">Email Address</label>
+                        <input type="email" id="reg-email" required placeholder="you@example.com">
+                    </div>
+                    <div class="form-group">
+                        <label for="reg-password">Password <small>(min. 6 chars)</small></label>
+                        <input type="password" id="reg-password" required placeholder="••••••••" minlength="6">
+                    </div>
+                    <p class="auth-error" id="register-error"></p>
+                    <button type="submit" class="btn btn-primary btn-block" id="register-submit-btn">Create Account</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Order History Modal -->
+    <div class="modal-overlay" id="orders-modal">
+        <div class="modal-container orders-container">
+            <button class="modal-close" id="close-orders-modal" aria-label="Close">
+                <i data-lucide="x"></i>
+            </button>
+            <h2 class="orders-modal-title"><i data-lucide="package"></i> My Orders</h2>
+            <div id="orders-list" class="orders-list">
+                <!-- Dynamically populated -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="main-footer">
+        <div class="container footer-container">
+            <div class="footer-brand">
+                <a href="/" class="logo">
+                    <span class="logo-dot"></span>
+                    AETHERIO
+                </a>
+                <p>Curating the future of workspace technology and high-fidelity acoustics.</p>
+            </div>
+            <div class="footer-links">
+                <h4>Explore</h4>
+                <ul>
+                    <li><a href="#catalog" data-category="all" class="footer-cat-link">All Products</a></li>
+                    <li><a href="#catalog" data-category="audio" class="footer-cat-link">Audio</a></li>
+                    <li><a href="#catalog" data-category="peripherals" class="footer-cat-link">Peripherals</a></li>
+                </ul>
+            </div>
+            <div class="footer-newsletter">
+                <h4>Newsletter</h4>
+                <p>Subscribe to secure early access to limited edition drops.</p>
+                <form class="newsletter-form" id="newsletter-form">
+                    <input type="email" placeholder="Your email address" required aria-label="Email address">
+                    <button type="submit" class="btn btn-primary btn-icon" aria-label="Subscribe">
+                        <i data-lucide="arrow-right"></i>
+                    </button>
+                </form>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <div class="container footer-bottom-container">
+                <p>&copy; 2026 AETHERIO. All rights reserved.</p>
+                <div class="socials">
+                    <a href="#" aria-label="Twitter"><i data-lucide="twitter"></i></a>
+                    <a href="#" aria-label="Instagram"><i data-lucide="instagram"></i></a>
+                    <a href="#" aria-label="GitHub"><i data-lucide="github"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JS Logic -->
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>
