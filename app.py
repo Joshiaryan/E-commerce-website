@@ -30,6 +30,13 @@ db = SQLAlchemy(app)
 login_manager = LoginManager()
 login_manager.init_app(app)
 
+@login_manager.unauthorized_handler
+def unauthorized():
+    # Return JSON for API requests, redirect for page requests
+    if request.path.startswith('/api/'):
+        return jsonify({"success": False, "error": "Authentication required", "logged_in": False}), 401
+    return redirect(url_for('home'))
+
 
 # ============================================================
 # Database Models
@@ -288,8 +295,9 @@ def me():
 
 
 @app.route('/api/orders')
-@login_required
 def get_orders():
+    if not current_user.is_authenticated:
+        return jsonify({"success": False, "error": "Authentication required", "logged_in": False}), 401
     orders = Order.query.filter_by(user_id=current_user.id)\
                         .order_by(Order.created_at.desc()).all()
     return jsonify([o.to_dict() for o in orders])
@@ -529,7 +537,7 @@ def admin_delete_product(product_id):
     if not product:
         return jsonify({"success": False, "error": "Product not found"}), 404
         
-    OrderItem.query.filter_by(product_id=product_id).update({OrderItem.product_id: None})
+    OrderItem.query.filter_by(product_id=product_id).update({'product_id': None})
     
     db.session.delete(product)
     db.session.commit()
